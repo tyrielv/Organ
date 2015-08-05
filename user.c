@@ -23,6 +23,8 @@
 /*                                                                            */
 /* This program uses Microchip USB software.  Refer to the included header    */
 /* files for Microchip licensing restrictions.                                */
+/*                                                                            */
+/* Modified 8/5/2015 by Tyrie Vella to support Allen MDC                      */
 /******************************************************************************/
 
 /******************************************************************************/
@@ -73,8 +75,29 @@ void InitApp(void)
 }
 
 void initPorts(void) {
-    AD1PCFG = 0x80fe;   // AN0 and AN8:14 are analog input for potentiometers
-    TRISACLR = 0xc6ff;  // RA0:7, RA9:10, RA14:15 are outputs
+    AD1PCFG = 0x0000;   // No analogs currently enabled
+    
+    // Matrix rows - inputs default to high
+    TRISASET = 0xc03c; //RA2-5, 15-16 are inputs for transpose and (great?)
+    TRISCSET = 0x2000; //RD0, 8-11, and RC13 are inputs for pedals and (swell?)
+    TRISDSET = 0x0f01; 
+    
+    
+    // Matrix columns - turned on
+    //RF2,4,5,8,12 RD14,15, RB12-15 are columns for swell and great
+    LATBSET = 0xf000;
+    LATDSET = 0xc000;
+    LATFSET = 0x1134;
+    //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
+    LATCSET = 0x4000;
+    LATDSET = 0x30fe;
+    LATFSET = 0x0003;
+    LATGSET = 0x0002;
+    
+    //Outputs (currently none - will have some for preset LED)
+    
+    
+    /* TRISACLR = 0xc6ff;  // RA0:7, RA9:10, RA14:15 are outputs
     LATASET = 0x06f3;   // Turn on bits that drive matrix columns
     TRISBCLR = 0x801e;  // RB1:4 are unused or column outputs, RB15 is a PMP output
     LATBSET = 0x0018;   // Turn on bits that drive matrix columns
@@ -91,7 +114,7 @@ void initPorts(void) {
                         // Also turn on bits that drive matrix columns
     TRISGCLR = 0xf3c3;  // RG0:1, RG6:9, RG12:15 are outputs
     LATGSET = 0x00c0;   // Turn off status LED bits
-    LATGSET = 0xf303;   // Turn on bits that drive matrix columns
+    LATGSET = 0xf303;   // Turn on bits that drive matrix columns */
 }
 
 void initBuffers(void) {
@@ -185,13 +208,14 @@ void eraseMidiTxMsg(void) {
 }
 
 void initADC(void) {
+    /*TODO
     AD1CON1 = 0x00f0;       // auto conversion after sampling, stop after 8 samples
     AD1CON2 = 0x041c;       // use MUXA, AVss/AVdd as Vref
     AD1CON3 = 0x1f3f;       // ??
     AD1CHS = 0;             // ignored for scanning
     AD1CSSL = 0x7f01;       // scan 8 inputs, RB0 and RB8:14
     AD1CON1bits.ADON = 1;   // turn on the ADC
-    AD1CON1bits.ASAM = 1;   // start auto sampling
+    AD1CON1bits.ASAM = 1;   // start auto sampling */
 }
 
 /*
@@ -213,55 +237,10 @@ void initTimer2(void) {
     //T2CONbits.ON = 1;       // turn on
 }
 
-/*
- *  Timer 3 sets a 50ms delay priot to turning on power to SAMs. Every new
- *  SAMs message resets this timer so that with a group of messages the first
- *  SAMs are activated 50ms after the final message.
- */
-void initTimer3(void) {
-    T3CON = 0x70;           // stop Timer3, prescaler 1:64, int clk
-    TMR3 = 0;               // zero the timer
-    PR3 = 15625;            // set period register for 50 ms
-                            //  (15625 x 3.2usec = 50ms)
-    IPC3bits.T3IP = 1;      // interrupt priority 1
-    IPC3bits.T3IS = 2;      // sub-priority 2
-    IFS0bits.T3IF = 0;      // clear Timer3 interrupt flag
-    IEC0bits.T3IE = 1;      // enable interrupts
-    //T3CONbits.ON = 1;       // turn on
-}
-
-/*
- *  Timer 4 is reset the first scan after setSAMsTims is set to true. After
- *  50ms the Timer4 interrupt turns the power off to all SAMs groups.
- */
-void initTimer4(void) {
-    T4CON = 0x70;           // stop Timer4, prescaler 1:256, int clk
-    TMR4 = 0;               // zero the timer
-    PR4 = 15625;            // set period register for 50 ms
-                            //  (15625 x 3.2usec = 50ms)
-    IPC4bits.T4IP = 2;      // interrupt priority 2
-    IPC4bits.T4IS = 2;      // sub-priority 2
-    IFS0bits.T4IF = 0;      // clear Timer4 interrupt flag
-    IEC0bits.T4IE = 1;      // enable interrupts
-    //T4CONbits.ON = 1;       // turn on
-}
-
 void resetTimer2(void) {
     T2CON = 0x30;           // stop Timer2, prescaler 1:64, int clk
     TMR2 = 0;               // zero the timer
     T2CONbits.ON = 1;       // turn on
-}
-
-void resetTimer3(void) {
-    T3CON = 0x70;           // stop Timer3, prescaler 1:64, int clk
-    TMR3 = 0;               // zero the timer
-    T3CONbits.ON = 1;       // turn on
-}
-
-void resetTimer4(void) {
-    T4CON = 0x70;           // stop Timer4, prescaler 1:64, int clk
-    TMR4 = 0;               // zero the timer
-    T4CONbits.ON = 1;       // turn on
 }
 
 void delayTimer1(int preset) {
@@ -272,144 +251,75 @@ void delayTimer1(int preset) {
 }
 
 void setMatrixColumn(int matrixColumn) {
+    setMatrixColumnToValue(matrixColumn, 0);
+}
+
+void setMatrixColumnToValue(int matrixColumn, int newValue) {
     switch (matrixColumn) {
         case 0:
-            LATAbits.LATA0 = 0;
+            MANUAL_OUTPUT_1 = newValue;
             break;
         case 1:
-            LATAbits.LATA1 = 0;
+            MANUAL_OUTPUT_2 = newValue;
             break;
         case 2:
-            LATAbits.LATA4 = 0;
+            MANUAL_OUTPUT_3 = newValue;
             break;
         case 3:
-            LATAbits.LATA5 = 0;
+            MANUAL_OUTPUT_4 = newValue;
             break;
         case 4:
-            LATAbits.LATA6 = 0;
+            MANUAL_OUTPUT_5 = newValue;
             break;
         case 5:
-            LATAbits.LATA7 = 0;
+            MANUAL_OUTPUT_6 = newValue;
             break;
         case 6:
-            LATAbits.LATA9 = 0;
+            MANUAL_OUTPUT_7 = newValue;
             break;
         case 7:
-            LATAbits.LATA10 = 0;
+            MANUAL_OUTPUT_8 = newValue;
             break;
         case 8:
-            LATBbits.LATB3 = 0;
+            MANUAL_OUTPUT_9 = newValue;
             break;
         case 9:
-            LATBbits.LATB4 = 0;
+            MANUAL_OUTPUT_10 = newValue;
             break;
         case 10:
-            LATGbits.LATG8 = 0;
+            MANUAL_OUTPUT_11 = newValue;
             break;
         case 11:
-            LATGbits.LATG9 = 0;
+            PEDAL_OUTPUT_1 = newValue;
+            TRANPOSE_OUTPUT_1 = newValue;
             break;
         case 12:
-            LATFbits.LATF0 = 0;
+            PEDAL_OUTPUT_2 = newValue;
+            TRANPOSE_OUTPUT_2 = newValue;
             break;
         case 13:
-            LATFbits.LATF1 = 0;
+            PEDAL_OUTPUT_3 = newValue;
+            TRANPOSE_OUTPUT_3 = newValue;
             break;
         case 14:
-            LATFbits.LATF12 = 0;
+            PEDAL_OUTPUT_4 = newValue;
+            TRANPOSE_OUTPUT_4 = newValue;
             break;
         case 15:
-            LATFbits.LATF13 = 0;
+            PEDAL_OUTPUT_5 = newValue;
+            TRANPOSE_OUTPUT_5 = newValue;
             break;
         case 16:
-            LATGbits.LATG0 = 0;
+            PEDAL_OUTPUT_6 = newValue;
+            TRANPOSE_OUTPUT_6 = newValue;
             break;
         case 17:
-            LATGbits.LATG1 = 0;
-            break;
-        case 18:
-            LATGbits.LATG12 = 0;
-            break;
-        case 19:
-            LATGbits.LATG13 = 0;
-            break;
-        case 20:
-            LATGbits.LATG14 = 0;
-            break;
-        case 21:
-            LATGbits.LATG15 = 0;
+            PEDAL_OUTPUT_7 = newValue;
             break;
     }
 }
 
 void clrMatrixColumn(int matrixColumn) {
-    switch (matrixColumn) {
-        case 0:
-            LATAbits.LATA0 = 1;
-            break;
-        case 1:
-            LATAbits.LATA1 = 1;
-            break;
-        case 2:
-            LATAbits.LATA4 = 1;
-            break;
-        case 3:
-            LATAbits.LATA5 = 1;
-            break;
-        case 4:
-            LATAbits.LATA6 = 1;
-            break;
-        case 5:
-            LATAbits.LATA7 = 1;
-            break;
-        case 6:
-            LATAbits.LATA9 = 1;
-            break;
-        case 7:
-            LATAbits.LATA10 = 1;
-            break;
-        case 8:
-            LATBbits.LATB3 = 1;
-            break;
-        case 9:
-            LATBbits.LATB4 = 1;
-            break;
-        case 10:
-            LATGbits.LATG8 = 1;
-            break;
-        case 11:
-            LATGbits.LATG9 = 1;
-            break;
-        case 12:
-            LATFbits.LATF0 = 1;
-            break;
-        case 13:
-            LATFbits.LATF1 = 1;
-            break;
-        case 14:
-            LATFbits.LATF12 = 1;
-            break;
-        case 15:
-            LATFbits.LATF13 = 1;
-            break;
-        case 16:
-            LATGbits.LATG0 = 1;
-            break;
-        case 17:
-            LATGbits.LATG1 = 1;
-            break;
-        case 18:
-            LATGbits.LATG12 = 1;
-            break;
-        case 19:
-            LATGbits.LATG13 = 1;
-            break;
-        case 20:
-            LATGbits.LATG14 = 1;
-            break;
-        case 21:
-            LATGbits.LATG15 = 1;
-            break;
-    }
+    setMatrixColumnToValue(matrixColumn, 1);
 }
 

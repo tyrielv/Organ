@@ -22,7 +22,8 @@
 /* email: john@kinkennon.com                                                  */
 /*                                                                            */
 /* This program uses Microchip USB software.  Refer to the included header    */
-/* files for Microchip licensing restrictions.                                */
+/*                                                                            */
+/* Modified 8/5/2015 by Tyrie Vella to support Allen MDC                      */
 /******************************************************************************/
 
 /******************************************************************************/
@@ -481,11 +482,12 @@ void parseMidiMsg(void) {
                                     midiTxMsg[2] = translateTable[7][0x3e][2];
                                     sendMidiMsg();
                                 }
+                                /* TODO
                                 if (transposeSW == 0) {
                                     LATCbits.LATC1 = 1; // RC1 - First LED - Red (transpose)
                                 } else {
                                     LATCbits.LATC1 = 0;
-                                }
+                                } */
                             break;
                             }
                         break;
@@ -501,6 +503,7 @@ void parseMidiMsg(void) {
                         for (i = 0; i < 6; i++)
                             HW_Status_Byte.v[i] = midiRxMsg[i]; // copy msg to structure
                         if (HW_Status_Byte.s.message_type != MSG_TYPE_STATUS_BOOLEAN) break;
+                        /* TODO
                         switch (HW_Status_Byte.s.variable_ID) {
                             case IS_SETTER_MODE_ON:
                                 if (HW_Status_Byte.s.byte_value)
@@ -552,7 +555,7 @@ void parseMidiMsg(void) {
                                 else if (HW_Status_Byte.s.byte_value == 0)
                                     LATGbits.LATG7 = 1; // turn off Error
                                 break;
-                        }
+                        } */
                 } // end of handled sysex messages
             } // end of complete sysex msg
                         eraseMidiRxMsg();
@@ -643,55 +646,48 @@ void initI2C(void) {
     }
 }
 
-void getTwelveBits(int matrixColumn) {
+void getBits(int matrixColumn) {
     int i = 0;
-    switch (matrixColumn) {
-        case 0:
-            keyBit[0] = (PORTCbits.RC14) ? 0 : 1;
-            keyBit[64] = (PORTDbits.RD13) ? 0 : 1;
-            break;
-        case 11:
-            keyBit[128] = (PORTCbits.RC14) ? 0 : 1;
-            keyBit[192] = (PORTDbits.RD13) ? 0 : 1;
-            break;
-        default:
-            i = ((matrixColumn % 11) * 6) + ((matrixColumn / 11) * 128) - 5;
-            keyBit[i++] = (PORTDbits.RD0) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD1) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD2) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD3) ? 0 : 1;
-            keyBit[i++] = (PORTCbits.RC13) ? 0 : 1;
-            keyBit[i++] = (PORTCbits.RC14) ? 0 : 1;
-            i += 58;
-            keyBit[i++] = (PORTDbits.RD8) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD9) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD10) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD11) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD12) ? 0 : 1;
-            keyBit[i++] = (PORTDbits.RD13) ? 0 : 1;
+    if (matrixColumn == 0) {
+        keyBit[0] = (SWELL_INPUT_1) ? 0 : 1;
+        keyBit[64] = (GREAT_INPUT_1) ? 0 : 1;
     }
-}
-
-void getSixteenBits(int matrixColumn) {
-    int i;
-    i = ((matrixColumn % 8) * 8) + ((matrixColumn / 8) * 128);
-    keyBit[i++] = (PORTDbits.RD0) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD1) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD2) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD3) ? 0 : 1;
-    keyBit[i++] = (PORTCbits.RC13) ? 0 : 1;
-    keyBit[i++] = (PORTCbits.RC14) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD6) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD7) ? 0 : 1;
-    i += 56;
-    keyBit[i++] = (PORTDbits.RD8) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD9) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD10) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD11) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD12) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD13) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD14) ? 0 : 1;
-    keyBit[i++] = (PORTDbits.RD15) ? 0 : 1;
+    else if (matrixColumn < 11) {
+        i = (matrixColumn * 6) - 5;
+        keyBit[i++] = (SWELL_INPUT_1) ? 0 : 1;
+        keyBit[i++] = (SWELL_INPUT_2) ? 0 : 1;
+        keyBit[i++] = (SWELL_INPUT_3) ? 0 : 1;
+        keyBit[i++] = (SWELL_INPUT_4) ? 0 : 1;
+        keyBit[i++] = (SWELL_INPUT_5) ? 0 : 1;
+        keyBit[i++] = (SWELL_INPUT_6) ? 0 : 1;
+        i += 58;
+        keyBit[i++] = (GREAT_INPUT_1) ? 0 : 1;
+        keyBit[i++] = (GREAT_INPUT_2) ? 0 : 1;
+        keyBit[i++] = (GREAT_INPUT_3) ? 0 : 1;
+        keyBit[i++] = (GREAT_INPUT_4) ? 0 : 1;
+        keyBit[i++] = (GREAT_INPUT_5) ? 0 : 1;
+        keyBit[i++] = (GREAT_INPUT_6) ? 0 : 1;
+    }
+    else if (matrixColumn == 11) {
+        keyBit[128] = (PEDAL_INPUT_1) ? 0 : 1;
+        keyBit[196] = (TRANSPOSE_INPUT_1) ? 0 : 1;
+    }
+    else {
+        i = ((matrixColumn - 11) * 6) + 128 - 5;
+        keyBit[i++] = (PEDAL_INPUT_1) ? 0 : 1;
+        keyBit[i++] = (PEDAL_INPUT_2) ? 0 : 1;
+        keyBit[i++] = (PEDAL_INPUT_3) ? 0 : 1;
+        keyBit[i++] = (PEDAL_INPUT_4) ? 0 : 1;
+        keyBit[i++] = (PEDAL_INPUT_5) ? 0 : 1;
+        keyBit[i++] = (PEDAL_INPUT_6) ? 0 : 1;
+        i += 58;
+        keyBit[i++] = (TRANSPOSE_INPUT_1) ? 0 : 1;
+        keyBit[i++] = (TRANSPOSE_INPUT_2) ? 0 : 1;
+        keyBit[i++] = (TRANSPOSE_INPUT_3) ? 0 : 1;
+        keyBit[i++] = (TRANSPOSE_INPUT_4) ? 0 : 1;
+        keyBit[i++] = (TRANSPOSE_INPUT_5) ? 0 : 1;
+        keyBit[i++] = (TRANSPOSE_INPUT_6) ? 0 : 1;
+    }
 }
 
 void updateKeyTable(int matrix) {
@@ -737,7 +733,7 @@ void putMidiMsg() {
     int index = (kybd * 64) + key;
     switch (mType) {
         case M_NOTE_ON:
-            if (kybd == 4) {                            // MIDI ch5
+            if (kybd == 3) {                            // MIDI ch4
                 if (key == 0) {     // if a transpose encoder bit
                     int8_t transposeTemp = 5;
                     if (keyBit[index++]) transposeTemp -= 1;
@@ -766,7 +762,7 @@ void putMidiMsg() {
             sendMidiMsg();
             break;
         case M_NOTE_OFF:
-            if (kybd == 4) {                            // MIDI ch5
+            if (kybd == 3) {                            // MIDI ch4
                 if (key == 0) {     // if a transpose encoder bit
                     int8_t transposeTemp = 5;
                     if (keyBit[index++]) transposeTemp -= 1;
@@ -811,6 +807,7 @@ void sendMidiMsg(void) {
 }
 
 void getPots(int numPots) {
+    /*TODO
     int i;
     int pot = 0;
     uint32_t diff;
@@ -829,7 +826,7 @@ void getPots(int numPots) {
             stalePot[i] = freshPot[i]; // save previous value
             sendMidiMsg();
         }
-    }
+    }*/
 }
 
 /********************************************************************
@@ -968,27 +965,12 @@ void ProcessIO(void) {
         int i, j, k;
         // get keyBit[] values by reading ports from low note to
         //   high note (61 notes)
-#ifdef USE_11x6_MATRIX
-        // this is for an 11x6 matrix
-        for (i = 0; i < 22; i++) {
+        for (i = 0; i < 18; i++) {
             setMatrixColumn(i); // set one column at a time low
-            getTwelveBits(i);
+            getBits(i);
             clrMatrixColumn(i);
         }
-#else
-        // this is for an 8x8 matrix
-        for (i = 0; i < 8; i++) {
-            setMatrixColumn(i); // set one column at a time low
-            getSixteenBits(i);
-            clrMatrixColumn(i);
-        }
-        for (i = 11; i < 19; i++) {
-            setMatrixColumn(i); // set one column at a time low
-            getSixteenBits(i-3);// -3 because we are skipping the three extra
-                                // columns used by an 11x6 matrix
-            clrMatrixColumn(i);
-        }
-#endif
+        
         for (i = 0; i < 4; i++) {
             updateKeyTable(i);
         }
@@ -1032,14 +1014,16 @@ void ProcessIO(void) {
             }
 #endif
             /* Every 32 scans read the potentiometers */
+            /* TODO
             if (keyScanCount == 24) {
                 if (potScanTime = true) {
                     getPots(8);             // read all 8 pots
                     potScanTime = false;    // don't do this until 32 keyscans later
                     AD1CON1bits.ASAM = 1;   // restart auto sampling
                 }
-            }
+            } */
         }
+        /* TODO
         if ((setSAMsTime) && (!SAMsPowerOn)) {
             if (pedalSAMsPending) {
                 LATFbits.LATF8 = 0;        // Turn on power #1 (red)
@@ -1064,7 +1048,7 @@ void ProcessIO(void) {
             } else {
                 setSAMsTime = false;        // When nothing more is pending
             }
-        }
+        } */
         keyScanTime = false; // don't re-enter while running!
     }
 }//end ProcessIO
