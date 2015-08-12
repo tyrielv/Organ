@@ -282,15 +282,15 @@ int32_t main(void) {
     /* Initialize I/O and Peripherals for application */
     InitApp();
     InitializeSystem(); // the Microchip USB initialization
-
+    
     /*Configure Multivector Interrupt Mode.  Using Single Vector Mode
     is expensive from a timing perspective, so most applications
     should probably not use a Single Vector Mode*/
     INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
 
     USBDeviceAttach();  // connect to host computer
-    if(USBDeviceState == ATTACHED_STATE)
-        resetTimer2();  // start scanning timer;
+    if(USBDeviceState == ATTACHED_STATE)         
+        resetTimer2(); // start scanning timer;
 #ifdef USE_LCD
     putsLCD("Kinkennon");
     putsLCD("\n");
@@ -646,47 +646,50 @@ void initI2C(void) {
     }
 }
 
+#define ON_VALUE 1
+#define OFF_VALUE 0
+
 void getBits(int matrixColumn) {
     int i = 0;
     if (matrixColumn == 0) {
-        keyBit[0] = (SWELL_INPUT_1) ? 0 : 1;
-        keyBit[64] = (GREAT_INPUT_1) ? 0 : 1;
+        keyBit[0] = (SWELL_INPUT_6) ? ON_VALUE : OFF_VALUE;
+        keyBit[64] = (GREAT_INPUT_6) ? ON_VALUE : OFF_VALUE;
     }
     else if (matrixColumn < 11) {
         i = (matrixColumn * 6) - 5;
-        keyBit[i++] = (SWELL_INPUT_1) ? 0 : 1;
-        keyBit[i++] = (SWELL_INPUT_2) ? 0 : 1;
-        keyBit[i++] = (SWELL_INPUT_3) ? 0 : 1;
-        keyBit[i++] = (SWELL_INPUT_4) ? 0 : 1;
-        keyBit[i++] = (SWELL_INPUT_5) ? 0 : 1;
-        keyBit[i++] = (SWELL_INPUT_6) ? 0 : 1;
+        keyBit[i++] = (SWELL_INPUT_1) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (SWELL_INPUT_2) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (SWELL_INPUT_3) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (SWELL_INPUT_4) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (SWELL_INPUT_5) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (SWELL_INPUT_6) ? ON_VALUE : OFF_VALUE;
         i += 58;
-        keyBit[i++] = (GREAT_INPUT_1) ? 0 : 1;
-        keyBit[i++] = (GREAT_INPUT_2) ? 0 : 1;
-        keyBit[i++] = (GREAT_INPUT_3) ? 0 : 1;
-        keyBit[i++] = (GREAT_INPUT_4) ? 0 : 1;
-        keyBit[i++] = (GREAT_INPUT_5) ? 0 : 1;
-        keyBit[i++] = (GREAT_INPUT_6) ? 0 : 1;
+        keyBit[i++] = (GREAT_INPUT_1) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (GREAT_INPUT_2) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (GREAT_INPUT_3) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (GREAT_INPUT_4) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (GREAT_INPUT_5) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (GREAT_INPUT_6) ? ON_VALUE : OFF_VALUE;
     }
     else if (matrixColumn == 11) {
-        keyBit[128] = (PEDAL_INPUT_1) ? 0 : 1;
-        keyBit[196] = (TRANSPOSE_INPUT_1) ? 0 : 1;
+        keyBit[128] = (PEDAL_INPUT_1) ? ON_VALUE : OFF_VALUE;
+        keyBit[196] = (TRANSPOSE_INPUT_1) ? ON_VALUE : OFF_VALUE;
     }
     else {
         i = ((matrixColumn - 11) * 6) + 128 - 5;
-        keyBit[i++] = (PEDAL_INPUT_1) ? 0 : 1;
-        keyBit[i++] = (PEDAL_INPUT_2) ? 0 : 1;
-        keyBit[i++] = (PEDAL_INPUT_3) ? 0 : 1;
-        keyBit[i++] = (PEDAL_INPUT_4) ? 0 : 1;
-        keyBit[i++] = (PEDAL_INPUT_5) ? 0 : 1;
-        keyBit[i++] = (PEDAL_INPUT_6) ? 0 : 1;
+        keyBit[i++] = (PEDAL_INPUT_1) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (PEDAL_INPUT_2) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (PEDAL_INPUT_3) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (PEDAL_INPUT_4) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (PEDAL_INPUT_5) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (PEDAL_INPUT_6) ? ON_VALUE : OFF_VALUE;
         i += 58;
-        keyBit[i++] = (TRANSPOSE_INPUT_1) ? 0 : 1;
-        keyBit[i++] = (TRANSPOSE_INPUT_2) ? 0 : 1;
-        keyBit[i++] = (TRANSPOSE_INPUT_3) ? 0 : 1;
-        keyBit[i++] = (TRANSPOSE_INPUT_4) ? 0 : 1;
-        keyBit[i++] = (TRANSPOSE_INPUT_5) ? 0 : 1;
-        keyBit[i++] = (TRANSPOSE_INPUT_6) ? 0 : 1;
+        keyBit[i++] = (TRANSPOSE_INPUT_1) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (TRANSPOSE_INPUT_2) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (TRANSPOSE_INPUT_3) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (TRANSPOSE_INPUT_4) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (TRANSPOSE_INPUT_5) ? ON_VALUE : OFF_VALUE;
+        keyBit[i++] = (TRANSPOSE_INPUT_6) ? ON_VALUE : OFF_VALUE;
     }
 }
 
@@ -945,10 +948,9 @@ void ProcessIO(void) {
     
     //Blink the LEDs according to the USB device status
     //Don't blink if LCD is used -- RE pin conflicts
-    //BlinkUSBStatus();
-
+    
     // User Application USB tasks
-    if ((USBDeviceState < CONFIGURED_STATE) || (USBSuspendControl == 1)) return;
+//    if ((USBDeviceState < CONFIGURED_STATE) || (USBSuspendControl == 1)) return;
 
     if (!USBHandleBusy(USBRxHandle)) {
         //We have received a MIDI packet from the host, process it and then
@@ -962,6 +964,7 @@ void ProcessIO(void) {
     }
 
     if (keyScanTime) {
+        mLED_1_On();
         int i, j, k;
         // get keyBit[] values by reading ports from low note to
         //   high note (61 notes)
@@ -971,7 +974,7 @@ void ProcessIO(void) {
             clrMatrixColumn(i);
         }
         
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 3; i++) {
             updateKeyTable(i);
         }
         if (keyScanCount % 4 == 0) { // if 0, 4, 8, 12, 16, 20, 24, 28
@@ -1071,53 +1074,55 @@ void ProcessIO(void) {
  *                  USBDeviceState is declared and updated in
  *                  usb_device.c.
  *******************************************************************/
-//void BlinkUSBStatus(void) {
-//    static uint16_t led_count = 0;
-//
-//    if (led_count == 0)led_count = 10000U;
-//    led_count--;
-//
-//#define mLED_Both_Off()         {mLED_1_Off();mLED_2_Off();}
-//#define mLED_Both_On()          {mLED_1_On();mLED_2_On();}
-//#define mLED_Only_1_On()        {mLED_1_On();mLED_2_Off();}
-//#define mLED_Only_2_On()        {mLED_1_Off();mLED_2_On();}
-//
-//    if (USBSuspendControl == 1) {
-//        if (led_count == 0) {
-//            mLED_1_Toggle();
-//            if (mGetLED_1()) {
-//                mLED_2_On();
-//            } else {
-//                mLED_2_Off();
-//            }
-//        }//end if
-//    } else {
-//        if (USBDeviceState == DETACHED_STATE) {
-//            mLED_Both_Off();
-//        } else if (USBDeviceState == ATTACHED_STATE) {
-//            mLED_Both_On();
-//        } else if (USBDeviceState == POWERED_STATE) {
-//            mLED_Only_1_On();
-//        } else if (USBDeviceState == DEFAULT_STATE) {
-//            mLED_Only_2_On();
-//        } else if (USBDeviceState == ADDRESS_STATE) {
-//            if (led_count == 0) {
-//                mLED_1_Toggle();
-//                mLED_2_Off();
-//            }//end if
-//        } else if (USBDeviceState == CONFIGURED_STATE) {
-//            if (led_count == 0) {
-//                mLED_1_Toggle();
-//                if (mGetLED_1()) {
-//                    mLED_2_Off();
-//                } else {
-//                    mLED_2_On();
-//                }
-//            }//end if
-//        }//end if(...)
-//    }//end if(UCONbits.SUSPND...)
-//
-//}//end BlinkUSBStatus
+void BlinkUSBStatus(void) {
+    static uint32_t led_count = 0;
+
+    if (led_count == 0)led_count = 300000U;
+    led_count--;
+
+#define mLED_Both_Off()         {mLED_1_Off();mLED_2_Off();}
+#define mLED_Both_On()          {mLED_1_On();mLED_2_On();}
+#define mLED_Only_1_On()        {mLED_1_On();mLED_2_Off();}
+#define mLED_Only_2_On()        {mLED_1_Off();mLED_2_On();}
+
+    //if (USBSuspendControl == 1) {
+        if (led_count == 0) {
+            if (mGetLED_1()) {
+                mLED_1_On();
+                mLED_2_Off();
+            } else {
+                mLED_2_On();
+                mLED_1_Off();
+            }
+        }//end if
+    /*} else {
+        if (USBDeviceState == DETACHED_STATE) {
+            mLED_Both_Off();
+            mLED_3_On();
+        } else if (USBDeviceState == ATTACHED_STATE) {
+            mLED_Both_On();
+        } else if (USBDeviceState == POWERED_STATE) {
+            mLED_Only_1_On();
+        } else if (USBDeviceState == DEFAULT_STATE) {
+            mLED_Only_2_On();
+        } else if (USBDeviceState == ADDRESS_STATE) {
+            if (led_count == 0) {
+                mLED_1_Toggle();
+                mLED_2_Off();
+            }//end if
+        } else if (USBDeviceState == CONFIGURED_STATE) {
+            if (led_count == 0) {
+                mLED_1_Toggle();
+                if (mGetLED_1()) {
+                    mLED_2_Off();
+                } else {
+                    mLED_2_On();
+                }
+            }//end if
+        }//end if(...)
+    }//end if(UCONbits.SUSPND...)
+*/
+}//end BlinkUSBStatus
 
 // ******************************************************************************************************
 // ************** USB Callback Functions ****************************************************************

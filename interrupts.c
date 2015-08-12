@@ -6,7 +6,7 @@
 #include <sys/attribs.h>     /* For __ISR definition                          */
 #include <stdint.h>          /* For uint32_t definition                       */
 #include <stdbool.h>         /* For true/false definition                     */
-
+#include "HardwareProfile.h"
 /******************************************************************************/
 /* Interrupt Vector Options                                                   */
 /******************************************************************************/
@@ -92,6 +92,7 @@ void __ISR(_TIMER_2_VECTOR, ipl2) TMR2_InterruptHandler(void) {
         if (++keyScanCount > 31)
             keyScanCount = 0;        // reset samScanTime counter
         keyScanTime = true;
+        
     }
     IFS0bits.T2IF = 0;  // Clear the interrupt flag
 }

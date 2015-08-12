@@ -47,14 +47,14 @@
 #define NVM_ADDRESS_PAGE (NVM_PROGRAM_PAGE & 0x9fffffff)
 
 /* which ports are which functions */
-//RA2-5, 15-16 are inputs for transpose and (great?)
+//RA2-5, 14-15 are inputs for transpose and (great?)
 //RD0, 8-11, and RC13 are inputs for pedals and (swell?)
 //RF2,4,5,8,12 RD14,15, RB12-15 are columns for swell and great
 //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
-#define SWELL_INPUT_1 PORTDbits.RD0
-#define SWELL_INPUT_2 PORTDbits.RD8
-#define SWELL_INPUT_3 PORTDbits.RD9
-#define SWELL_INPUT_4 PORTDbits.RD10
+#define SWELL_INPUT_1 PORTDbits.RD10
+#define SWELL_INPUT_2 PORTDbits.RD9
+#define SWELL_INPUT_3 PORTDbits.RD8
+#define SWELL_INPUT_4 PORTDbits.RD0
 #define SWELL_INPUT_5 PORTDbits.RD11
 #define SWELL_INPUT_6 PORTCbits.RC13
 
@@ -65,31 +65,32 @@
 #define PEDAL_INPUT_5 PORTDbits.RD11
 #define PEDAL_INPUT_6 PORTCbits.RC13
 
-#define GREAT_INPUT_1 PORTAbits.RA2
-#define GREAT_INPUT_2 PORTAbits.RA3
-#define GREAT_INPUT_3 PORTAbits.RA4
-#define GREAT_INPUT_4 PORTAbits.RA5
-#define GREAT_INPUT_5 PORTAbits.RA15
-#define GREAT_INPUT_6 PORTAbits.RA16
+#define GREAT_INPUT_1 PORTAbits.RA5  
+#define GREAT_INPUT_2 PORTAbits.RA14 
+#define GREAT_INPUT_3 PORTAbits.RA15 
+#define GREAT_INPUT_4 PORTAbits.RA2 
+#define GREAT_INPUT_5 PORTAbits.RA3 
+#define GREAT_INPUT_6 PORTAbits.RA4 
 
 #define TRANSPOSE_INPUT_1 PORTAbits.RA2
 #define TRANSPOSE_INPUT_2 PORTAbits.RA3
 #define TRANSPOSE_INPUT_3 PORTAbits.RA4
 #define TRANSPOSE_INPUT_4 PORTAbits.RA5
-#define TRANSPOSE_INPUT_5 PORTAbits.RA15
-#define TRANSPOSE_INPUT_6 PORTAbits.RA16
+#define TRANSPOSE_INPUT_5 PORTAbits.RA14
+#define TRANSPOSE_INPUT_6 PORTAbits.RA15
 
-#define MANUAL_OUTPUT_1 LATBbits.LATB12
-#define MANUAL_OUTPUT_2 LATBbits.LATB13
-#define MANUAL_OUTPUT_3 LATBbits.LATB14
-#define MANUAL_OUTPUT_4 LATBbits.LATB15
+#define MANUAL_OUTPUT_1 LATBbits.LATB13
+#define MANUAL_OUTPUT_2 LATBbits.LATB14 
+#define MANUAL_OUTPUT_3 LATBbits.LATB15 
+#define MANUAL_OUTPUT_4 LATDbits.LATD15
 #define MANUAL_OUTPUT_5 LATDbits.LATD14
-#define MANUAL_OUTPUT_6 LATDbits.LATD15
+#define MANUAL_OUTPUT_6 LATFbits.LATF5
 #define MANUAL_OUTPUT_7 LATFbits.LATF2
 #define MANUAL_OUTPUT_8 LATFbits.LATF4
-#define MANUAL_OUTPUT_9 LATFbits.LATF5
-#define MANUAL_OUTPUT_10 LATFbits.LATF8
-#define MANUAL_OUTPUT_11 LATFbits.LATF12
+#define MANUAL_OUTPUT_9 LATFbits.LATF12
+#define MANUAL_OUTPUT_10 LATBbits.LATB12
+#define MANUAL_OUTPUT_11 LATFbits.LATF8
+
 
 #define PEDAL_OUTPUT_1 LATCbits.LATC14
 #define PEDAL_OUTPUT_2 LATDbits.LATD1

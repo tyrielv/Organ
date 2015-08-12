@@ -38,7 +38,6 @@
 #include "HardwareProfile.h" /* Board LEDs, switches, etc.                    */
 #include "midi.h"            /* MIDI definitions                              */
 #include "lcd.h"
-
 /******************************************************************************/
 /* User Functions                                                             */
 /******************************************************************************/
@@ -63,9 +62,7 @@ void InitApp(void)
     eraseMidiTxMsg();
     initNVM();          // initialize flash memory
     initADC();          // initialize potentiometer inputs
-    initTimer2();       // initialize the .5ms timer but don't start
-    initTimer3();       // initialize Timer 3 but don't start
-    initTimer4();       // initialize Timer 4 but don't start
+    initTimer2();       // initialize the .5ms timer but don't start    
 #ifdef USE_I2C
     initI2C();
 #endif
@@ -75,24 +72,32 @@ void InitApp(void)
 }
 
 void initPorts(void) {
-    AD1PCFG = 0x0000;   // No analogs currently enabled
+    mInitAllLEDs();
+    mLED_1_Off();
+    mLED_2_Off();
+    mLED_3_Off();
+    mLED_4_Off();
     
-    // Matrix rows - inputs default to high
+    AD1PCFG = 0x0000;   // No analogs currently enabled
+    // Matrix rows - inputs default to low
     TRISASET = 0xc03c; //RA2-5, 15-16 are inputs for transpose and (great?)
     TRISCSET = 0x2000; //RD0, 8-11, and RC13 are inputs for pedals and (swell?)
     TRISDSET = 0x0f01; 
     
     
-    // Matrix columns - turned on
+    // Matrix columns - turned off
     //RF2,4,5,8,12 RD14,15, RB12-15 are columns for swell and great
-    LATBSET = 0xf000;
-    LATDSET = 0xc000;
-    LATFSET = 0x1134;
     //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
-    LATCSET = 0x4000;
-    LATDSET = 0x30fe;
-    LATFSET = 0x0003;
-    LATGSET = 0x0002;
+    TRISBCLR = 0xf000;
+    LATBCLR = 0xf000;
+    TRISCCLR = 0x4000;
+    LATCCLR = 0x4000;
+    TRISDCLR = 0xf0fe;
+    LATDCLR = 0xf0fe;
+    TRISFCLR = 0x1137;
+    LATFCLR = 0x1137;
+    TRISGCLR = 0x0002;
+    LATGCLR = 0x0002;
     
     //Outputs (currently none - will have some for preset LED)
     
@@ -250,10 +255,6 @@ void delayTimer1(int preset) {
     while (TMR1 < preset);
 }
 
-void setMatrixColumn(int matrixColumn) {
-    setMatrixColumnToValue(matrixColumn, 0);
-}
-
 void setMatrixColumnToValue(int matrixColumn, int newValue) {
     switch (matrixColumn) {
         case 0:
@@ -320,6 +321,10 @@ void setMatrixColumnToValue(int matrixColumn, int newValue) {
 }
 
 void clrMatrixColumn(int matrixColumn) {
+    setMatrixColumnToValue(matrixColumn, 0);
+}
+
+void setMatrixColumn(int matrixColumn) {
     setMatrixColumnToValue(matrixColumn, 1);
 }
 
