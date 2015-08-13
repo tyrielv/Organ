@@ -672,7 +672,7 @@ void getBits(int matrixColumn) {
         keyBit[i++] = (GREAT_INPUT_6) ? ON_VALUE : OFF_VALUE;
     }
     else if (matrixColumn == 11) {
-        keyBit[128] = (PEDAL_INPUT_1) ? ON_VALUE : OFF_VALUE;
+        keyBit[128] = (PEDAL_INPUT_6) ? ON_VALUE : OFF_VALUE;
         keyBit[196] = (TRANSPOSE_INPUT_1) ? ON_VALUE : OFF_VALUE;
     }
     else {
@@ -972,9 +972,12 @@ void ProcessIO(void) {
             setMatrixColumn(i); // set one column at a time low
             getBits(i);
             clrMatrixColumn(i);
+            for (j = 0; j < 100; j++) {
+                //Needed to allow pull-up resistors time to work?
+            }
         }
         
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < 4; i++) {
             updateKeyTable(i);
         }
         if (keyScanCount % 4 == 0) { // if 0, 4, 8, 12, 16, 20, 24, 28
