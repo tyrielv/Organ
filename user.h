@@ -31,11 +31,6 @@
 /* User Level #define Macros                                                  */
 /******************************************************************************/
 
-//#define USE_LCD           /* Comment out if no LCD is connected             */
-//#define USE_I2C           /* Comment out if no Centipede Shields used       */
-#define USE_11x6_MATRIX     /* Comment out for 8x8 matrix size                */
-//#define USE_8x4_PEDAL     /* Uncomment to use an 8x4 pedalboard (some ADCs) */
-
 #define USE_PICKIT3         /* Comment out to use bootloader */
 #define SIZEOF_MSG_BUF      64
 #define SIZEOF_RX_BUF       64
@@ -68,28 +63,28 @@
 #define GREAT_INPUT_1 PORTAbits.RA5  
 #define GREAT_INPUT_2 PORTAbits.RA14 
 #define GREAT_INPUT_3 PORTAbits.RA15 
-#define GREAT_INPUT_4 PORTAbits.RA2 
-#define GREAT_INPUT_5 PORTAbits.RA3 
+#define GREAT_INPUT_4 PORTFbits.RF2
+#define GREAT_INPUT_5 PORTFbits.RF8
 #define GREAT_INPUT_6 PORTAbits.RA4 
 
-#define TRANSPOSE_INPUT_1 PORTAbits.RA2
-#define TRANSPOSE_INPUT_2 PORTAbits.RA3
+#define TRANSPOSE_INPUT_1 PORTFbits.RF2
+#define TRANSPOSE_INPUT_2 PORTFbits.RF8
 #define TRANSPOSE_INPUT_3 PORTAbits.RA4
 #define TRANSPOSE_INPUT_4 PORTAbits.RA5
 #define TRANSPOSE_INPUT_5 PORTAbits.RA14
 #define TRANSPOSE_INPUT_6 PORTAbits.RA15
 
-#define MANUAL_OUTPUT_1 LATBbits.LATB13
-#define MANUAL_OUTPUT_2 LATBbits.LATB14 
-#define MANUAL_OUTPUT_3 LATBbits.LATB15 
-#define MANUAL_OUTPUT_4 LATDbits.LATD15
-#define MANUAL_OUTPUT_5 LATDbits.LATD14
-#define MANUAL_OUTPUT_6 LATFbits.LATF5
-#define MANUAL_OUTPUT_7 LATFbits.LATF2
-#define MANUAL_OUTPUT_8 LATFbits.LATF4
-#define MANUAL_OUTPUT_9 LATFbits.LATF12
-#define MANUAL_OUTPUT_10 LATBbits.LATB12
-#define MANUAL_OUTPUT_11 LATFbits.LATF8
+#define MANUAL_OUTPUT_1 LATFbits.LATF12
+#define MANUAL_OUTPUT_2 LATBbits.LATB12 
+#define MANUAL_OUTPUT_3 LATBbits.LATB13 
+#define MANUAL_OUTPUT_4 LATBbits.LATB15
+#define MANUAL_OUTPUT_5 LATBbits.LATB14
+#define MANUAL_OUTPUT_6 LATDbits.LATD15
+#define MANUAL_OUTPUT_7 LATFbits.LATF4
+#define MANUAL_OUTPUT_8 LATDbits.LATD14
+#define MANUAL_OUTPUT_9 LATAbits.LATA1
+#define MANUAL_OUTPUT_10 LATFbits.LATF13
+#define MANUAL_OUTPUT_11 LATFbits.LATF5
 
 
 #define PEDAL_OUTPUT_1 LATDbits.LATD12

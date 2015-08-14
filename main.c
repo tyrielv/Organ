@@ -111,99 +111,6 @@ uint8_t translateTable[8][64][8]; // 8 kybd, 64 keys, 4 bytes per msg x2
  *                   8 to 15 is B0 to B7 on the IC)
  *          0 to 15
  */
-uint8_t samsTable[80][3] = {
-    // Pedal division SAMs (11)
-    {1, 0, 0},  // Schalmei 4           3-1-A0
-    // {1, 0, 0} is the pedal division, first chip on first shield, first bit (A0)
-    // 3-1-A0 is for the 3rd Centipede Shield, first chip, bit A0
-    // It's the 3rd shield because the first is for piston inputs, the second for
-    // inputs from stops, and the third is for output (control) to stops
-    {1, 0, 1},  // Posuane 16           3-1-A1
-    {1, 0, 2},  // Choral Bass 4        3-1-A2
-    {1, 0, 3},  // Octave 8             3-1-A3
-    {1, 0, 4},  // Diapason 16          3-1-A4
-    {1, 0, 5},  // Contra Bourdon 32    3-1-A5
-    {1, 0, 6},  // Trompete 8           3-1-A6
-    {1, 0, 7},  // Mixtur III           3-1-A7
-    {1, 0, 8},  // Gedeckt Flote 8      3-1-B0
-    {1, 0, 9},  // Leiblich Gedeckt 16  3-1-B1
-    {1, 0, 10}, // Bourdon 16           3-1-B2
-    // Swell division SAMs (19)
-    {2, 0, 11}, // Clarion 4            3-1-B3
-    {2, 0, 12}, // Contra Fagotto 16    3-1-B4
-    {2, 0, 13}, // Cymbale III          3-1-B5
-    {2, 0, 14}, // Fourniture IV        3-1-B6
-    {2, 0, 15}, // Prinzipal Coneique 4 3-1-B7
-    {2, 1, 0},  // Gemshorn 8           3-2-A0
-    {2, 1, 1},  // Salizional 8         3-2-A1
-    {2, 1, 2},  // Celeste              3-2-A2
-    {2, 1, 3},  // Trompette 8          3-2-A3
-    {2, 1, 4},  // Sifflet 1            3-2-A4
-    {2, 1, 5},  // Flute a bec 2        3-2-A5
-    {2, 1, 6},  // Flute a fuseau 4     3-2-A6
-    {2, 1, 7},  // Flute Bouchee 8      3-2-A7
-    {2, 1, 8},  // Voix Celeste         3-2-B0
-    {2, 1, 9},  // Tremulant            3-2-B1
-    {2, 1, 10}, // Hautbois 8           3-2-B2
-    {2, 1, 11}, // Tierce 1 3/5         3-2-B3
-    {2, 1, 12}, // Nazard 2 2/3         3-2-B4
-    {2, 1, 13}, // Blank                3-2-B5
-    // Great division SAMs (16)
-    {3, 1, 14}, // Trompete 8           3-2-B6
-    {3, 1, 15}, // Super Octav 2        3-2-B7
-    {3, 2, 0},  // Octav 4              3-3-A0
-    {3, 2, 1},  // Prinzipal 8          3-3-A1
-    {3, 2, 2},  // Gemshorn 16          3-3-A2
-    {3, 2, 3},  // Mixtur IV            3-3-A3
-    {3, 2, 4},  // Waldflote 2          3-3-A4
-    {3, 2, 5},  // Gamba 8              3-3-A5
-    {3, 2, 6},  // Flute Dolce II       3-3-A6
-    {3, 2, 7},  // Chiff                3-3-A7
-    // These choir SAMs are on the Great power supply section (3)
-    {3, 2, 8},  // Tremulant            3-3-B0
-    {3, 2, 9},  // Quinte 1 1/3         3-3-B1
-    {3, 2, 10}, // Spitzflote 4         3-3-B2
-    {3, 2, 11}, // Hohlflote 8          3-3-B3
-    {3, 2, 12}, // Celest tuning        3-3-B4
-    {3, 2, 13}, // Blank                3-3-B5
-    // One spare
-    {0, 2, 14}, // spare                3-3-B6
-    // 17 couplers here (SAMs)
-    {2, 2, 15}, // Group 1, Coupler 1   3-3-B7
-    {2, 3, 0},  // Group 1, Coupler 2   3-4-A0
-    {2, 3, 1},  // Group 1, Coupler 3   3-4-A1
-    {2, 3, 2},  // Group 1, Coupler 4   3-4-A2
-    {2, 3, 3},  // Group 1, Coupler 5   3-4-A3
-    {2, 3, 4},  // Group 1, Coupler 6   3-4-A4
-    {2, 3, 5},  // Group 1, Coupler 7   3-4-A5
-    {1, 3, 6},  // Group 2, Coupler 1   3-4-A6
-    {1, 3, 7},  // Group 2, Coupler 2   3-4-A7
-    {1, 3, 8},  // Group 2, Coupler 3   3-4-B0
-    {1, 3, 9},  // Group 2, Coupler 4   3-4-B1
-    {3, 3, 10}, // Group 2, Coupler 5   3-4-B2
-    {4, 3, 11}, // Group 3, Coupler 1   3-4-B3
-    {4, 3, 12}, // Group 3, Coupler 2   3-4-B4
-    {4, 3, 13}, // Group 3, Coupler 3   3-4-B5
-    {4, 3, 14}, // Group 3, Coupler 4   3-4-B6
-    {4, 3, 15}, // Group 3, Coupler 5   3-4-B7
-    // the 4th Centipede Shield is not present for the Allen 4100
-    {0, 4, 0},  // blank
-    {0, 4, 1},  // blank
-    {0, 4, 2},  // blank
-    {0, 4, 3},  // blank
-    {0, 4, 4},  // blank
-    {0, 4, 5},  // blank
-    {0, 4, 6},  // blank
-    {0, 4, 7},  // blank
-    {0, 4, 8},  // blank
-    {0, 4, 9},  // blank
-    {0, 4, 10}, // blank
-    {0, 4, 11}, // blank
-    {0, 4, 12}, // blank
-    {0, 4, 13}, // blank
-    {0, 4, 14}, // blank
-    {0, 4, 15}  // blank
-};
 
 uint8_t ReceivedDataBuffer[SIZEOF_RX_BUF]; // data from USB
 uint8_t midiRxMsg[SIZEOF_MSG_BUF]; // big enough to handle typical Sysex buffer
@@ -216,11 +123,8 @@ USB_HANDLE USBTxHandle = 0;
 USB_HANDLE USBRxHandle = 0;
 
 uint32_t i2cActualClock1;
-uint32_t i2cActualClock2;
 // the following arrays are 2 x 8 where there are two I2C buses with 8 ICs each
-uint16_t i2cRxData[2][8];           // input data from pistons and stops
-UINT16_VAL i2cTxData[2][8];         // output data to SAMs
-bool i2cChipIsOutput[2][8];         // 2 buses x 8 chip each
+uint16_t i2cRxData[4];           // input data from pistons and stops
 uint8_t chipAddress = CENT_CHIP_1;
 
 volatile uint32_t *adcBufferPtr[8] = { &ADC1BUF0, &ADC1BUF1, &ADC1BUF2,
@@ -236,12 +140,6 @@ uint32_t freshPot[16] = { 0,0,0,0,
 uint8_t keyScanCount = 0;           // count reset every 32 kybd scans
 bool potScanTime = false;           // set by ADC interrupt
 bool keyScanTime = false;           // set by timer2 interrupt
-bool setSAMsTime = false;           // set 50ms after last stop change
-bool pedalSAMsPending = false;      // a stop has changed in the pedal division
-bool swellSAMsPending = false;      // a stop change on swell
-bool greatSAMsPending = false;      // a stop change on great
-bool cpSAMsPending = false;         // cp is coupler panel (rocker tablets)
-bool SAMsPowerOn = false;           // flag set when any SAMs power is active
 uint8_t msgFinishedLen = 0;         // set to length of MIDI msg
 uint8_t msgType = 0;
 uint8_t msgChannel = 0;
@@ -291,11 +189,6 @@ int32_t main(void) {
     USBDeviceAttach();  // connect to host computer
     if(USBDeviceState == ATTACHED_STATE)         
         resetTimer2(); // start scanning timer;
-#ifdef USE_LCD
-    putsLCD("Kinkennon");
-    putsLCD("\n");
-    putsLCD("MIDI Encoder");
-#endif
     while(1)
     {
         ProcessIO();
@@ -389,38 +282,7 @@ void parseMidiMsg(void) {
                 if (msgChannel == 5) {
                     // handle a stop action magnet (SAM)
                     int stop = midiRxMsg[1] - 0x24;
-                    if (stop > 80) break;       // sanity check
-                    switch (samsTable[stop][0]) {
-                        case 0:
-                            break;
-                        case 1:
-                            pedalSAMsPending = true;
-                            break;
-                        case 2:
-                            swellSAMsPending = true;
-                            break;
-                        case 3:
-                            greatSAMsPending = true;
-                            break;
-                        case 4:
-                            cpSAMsPending = true;
-                            break;
-                    }
-                    uint8_t j = samsTable[stop][1];
-                    uint8_t chipAddress = j + CENT_CHIP_1;
-                    uint8_t bitOffset = samsTable[stop][2];
-#ifdef USE_I2C
-                    if (msgType == M_NOTE_ON)
-                        i2cTxData[1][j].Val &= ~(1 << bitOffset);  // clear bit
-                    if (msgType == M_NOTE_OFF)
-                        i2cTxData[1][j].Val |= 1 << bitOffset;     // set bit
-                    // Only send when HW status is Organ Ready
-                    if (LATCbits.LATC2 == 0) {
-                        putCentipedeBytes(CENTIPEDE_I2C_BUS2, chipAddress,
-                            i2cTxData[1][j]);
-                        resetTimer3();  // Timer 3 will make setSAMsTime = true
-                    }
-#endif
+                    if (stop > 80) break;       // sanity check                    
                 }
             }
             if ((msgType == M_SYSTEM_EX) && (midiRxMsg[1] == M_SYSEX_ID)) {
@@ -429,13 +291,6 @@ void parseMidiMsg(void) {
                         for (i = 0; i < 39; i++)
                             LCD_Msg.v[i] = midiRxMsg[i];
                         if (LCD_Msg.s1.message_type != MSG_TYPE_LCD) break;
-#ifdef USE_LCD
-                        homeLCD();
-                        delayTimer1(30);    // Increase if first character is dropped
-                        putsLCD(LCD_Msg.s3.ascii_line1 + '\0');
-                        putsLCD("\n");
-                        putsLCD(LCD_Msg.s3.ascii_line2 + '\0');
-#endif
                         break;
                     case 22: // change to translation for one key
                         if (midiRxMsg[2] != 0x70) break; // msg type/length mis-match
@@ -595,54 +450,19 @@ void getNvmTableRow(int tableRow) {
 void initI2C(void) {
     int i, j;
 
-    for (i = 0; i < 2; i++) {
-        for (j = 0; j < 8; j++) {
-            i2cRxData[i][j] = 0xffff;
-            i2cTxData[i][j].Val = 0xffff;
-        }
+    for (i = 0; i < 4; i++) {
+        i2cRxData[i] = 0xffff;            
     }
-    // Set true if an i2c chip is used for output
-    i2cChipIsOutput[0][0] = false;  // Pistons In
-    i2cChipIsOutput[0][1] = false;
-    i2cChipIsOutput[0][2] = false;
-    i2cChipIsOutput[0][3] = false;
-    i2cChipIsOutput[0][4] = false;  // Stops In
-    i2cChipIsOutput[0][5] = false;
-    i2cChipIsOutput[0][6] = false;
-    i2cChipIsOutput[0][7] = false;
-    i2cChipIsOutput[1][0] = true;   // Stops Out
-    i2cChipIsOutput[1][1] = true;
-    i2cChipIsOutput[1][2] = true;
-    i2cChipIsOutput[1][3] = true;
-    i2cChipIsOutput[1][4] = true;  // Couplers In
-    i2cChipIsOutput[1][5] = true;   // Couplers Out
-    i2cChipIsOutput[1][6] = true;
-    i2cChipIsOutput[1][7] = true;
     // Set the I2C baudrate
     i2cActualClock1 = I2CSetFrequency(CENTIPEDE_I2C_BUS1, GetPeripheralClock(), I2C_CLOCK_FREQ);
-    i2cActualClock2 = I2CSetFrequency(CENTIPEDE_I2C_BUS2, GetPeripheralClock(), I2C_CLOCK_FREQ);
     // Enable the I2C1 bus
     I2CConfigure(CENTIPEDE_I2C_BUS1, I2C_ENABLE_HIGH_SPEED);
     I2CEnable(CENTIPEDE_I2C_BUS1, true);
-    // Enable the I2C2 bus
-    I2CConfigure(CENTIPEDE_I2C_BUS2, I2C_ENABLE_HIGH_SPEED);
-    I2CEnable(CENTIPEDE_I2C_BUS2, true);
-
+    
     // TODO: fix DUAL and SINGLE to reflect actual system configuration
     chipAddress = CENT_CHIP_1;
-    for (i = 0; i < DUAL_CENT_NUM_CHIPS; i++) {
-        initCentipedeChip(CENTIPEDE_I2C_BUS1, chipAddress++, i2cChipIsOutput[0][i]);
-    }
-    chipAddress = CENT_CHIP_1;
     for (i = 0; i < SINGLE_CENT_NUM_CHIPS; i++) {
-        initCentipedeChip(CENTIPEDE_I2C_BUS2, chipAddress++, i2cChipIsOutput[1][i]);
-    }
-    chipAddress = CENT_CHIP_1;
-    for (i = 0; i < SINGLE_CENT_NUM_CHIPS; i++) {
-        if (i2cChipIsOutput[1][i]) {
-            putCentipedeBytes(CENTIPEDE_I2C_BUS2, chipAddress, i2cTxData[1][i]);
-        }
-        chipAddress++;
+        initCentipedeChip(CENTIPEDE_I2C_BUS1, chipAddress++, false);
     }
 }
 
@@ -980,45 +800,25 @@ void ProcessIO(void) {
         for (i = 0; i < 4; i++) {
             updateKeyTable(i);
         }
-        if (keyScanCount % 4 == 0) { // if 0, 4, 8, 12, 16, 20, 24, 28
-            i = keyScanCount / 4;    // i = 0, 1, ...7
-#ifdef USE_I2C
+        if (keyScanCount % 4 == 0) { // if 0, 4, 8, 12, 
+            i = keyScanCount / 4;    // i = 0, 1, 2,3
+
             chipAddress = CENT_CHIP_1 + i;
-            if (!i2cChipIsOutput[0][i]) {
-                i2cRxData[0][i] = getCentipedeBytes(CENTIPEDE_I2C_BUS1, chipAddress, CENT_REG_A);
-            }
-            if (!i2cChipIsOutput[1][i]) {
-                i2cRxData[1][i] = getCentipedeBytes(CENTIPEDE_I2C_BUS2, chipAddress, CENT_REG_A);
-            }
+            i2cRxData[i] = getCentipedeBytes(CENTIPEDE_I2C_BUS1, chipAddress, CENT_REG_A);
+            
             /* Every 32 scans write the chip data (pistons and stops) to the
              * keyBit[512] table. */
             if (keyScanCount == 0) { // once every 32 key scans
                 int offset = 256;
                 for (j = 0; j < 8; j++) { // for 8 16-bit words
-                    uint16_t i2cBits = i2cRxData[0][j];
+                    uint16_t i2cBits = i2cRxData[j];
                     for (k = 0; k < 16; k++) { // for 16 bits
                         keyBit[offset++] = (i2cBits & 0x0001) ? 0 : 1;
                         i2cBits = i2cBits >> 1;
                     }
                 }
                 updateKeyTable(4);
-                updateKeyTable(5);
             }
-            /* Every 32 scans write the chip data (coupler inputs) to the
-             * keyBit[512] table. */
-            if (keyScanCount == 12) { // once every 32 key scans
-                int offset = 384;
-                for (j = 0; j < 8; j++) { // for 8 16-bit bytes
-                    uint16_t i2cBits = i2cRxData[1][j];
-                    for (k = 0; k < 16; k++) { // for 16 bits
-                        keyBit[offset++] = (i2cBits & 0x0001) ? 0 : 1;
-                        i2cBits = i2cBits >> 1;
-                    }
-                }
-                //updateKeyTable(6);    // These 64 are always outputs
-                updateKeyTable(7);
-            }
-#endif
             /* Every 32 scans read the potentiometers */
             /* TODO
             if (keyScanCount == 24) {
@@ -1028,33 +828,7 @@ void ProcessIO(void) {
                     AD1CON1bits.ASAM = 1;   // restart auto sampling
                 }
             } */
-        }
-        /* TODO
-        if ((setSAMsTime) && (!SAMsPowerOn)) {
-            if (pedalSAMsPending) {
-                LATFbits.LATF8 = 0;        // Turn on power #1 (red)
-                SAMsPowerOn = true;        // Turn on power flag
-                resetTimer4();             // Start timer4
-                pedalSAMsPending = false;
-            } else if (swellSAMsPending) {
-                LATFbits.LATF2 = 0;         // Turn on power #2 (green)
-                SAMsPowerOn = true;
-                resetTimer4();
-                swellSAMsPending = false;
-            } else if (greatSAMsPending) {
-                LATFbits.LATF5 = 0;         // Turn on power #3 (blue)
-                SAMsPowerOn = true;
-                resetTimer4();
-                greatSAMsPending = false;
-            } else if (cpSAMsPending) {
-                LATFbits.LATF4 = 0;         // Turn on power #4 (white)
-                SAMsPowerOn = true;
-                resetTimer4();
-                cpSAMsPending = false;
-            } else {
-                setSAMsTime = false;        // When nothing more is pending
-            }
-        } */
+        }        
         keyScanTime = false; // don't re-enter while running!
     }
 }//end ProcessIO

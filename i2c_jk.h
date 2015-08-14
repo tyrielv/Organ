@@ -5,19 +5,13 @@
 #define I2C_CLOCK_FREQ          400000      // 400000 usable with shorter cables
 
 // Centipede Constants
-#define CENTIPEDE_I2C_BUS1      I2C1
-#define CENTIPEDE_I2C_BUS2      I2C2
+#define CENTIPEDE_I2C_BUS1      I2C2
 #define CENTIPEDE_BASE_ADDRESS  0x20    // 0b0100000 Centipede Shield address
 
 #define CENT_CHIP_1             0x20
 #define CENT_CHIP_2             0x21
 #define CENT_CHIP_3             0x22
 #define CENT_CHIP_4             0x23
-#define CENT_CHIP_5             0x24
-#define CENT_CHIP_6             0x25
-#define CENT_CHIP_7             0x26
-#define CENT_CHIP_8             0x27
-#define DUAL_CENT_NUM_CHIPS     8
 #define SINGLE_CENT_NUM_CHIPS   4
 
 #define CENT_REG_A              0x12

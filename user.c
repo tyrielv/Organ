@@ -63,12 +63,7 @@ void InitApp(void)
     initNVM();          // initialize flash memory
     initADC();          // initialize potentiometer inputs
     initTimer2();       // initialize the .5ms timer but don't start    
-#ifdef USE_I2C
     initI2C();
-#endif
-#ifdef USE_LCD
-    initLCD();
-#endif
 }
 
 void initPorts(void) {
@@ -80,22 +75,25 @@ void initPorts(void) {
     
     AD1PCFG = 0x0000;   // No analogs currently enabled
     // Matrix rows - inputs default to low
-    TRISASET = 0xc03c; //RA2-5, 15-16 are inputs for transpose and (great?)
+    TRISASET = 0xc030; //RA4-5, 14-15, F2,F8 are inputs for transpose and (great?)
+    TRISFSET = 0x0104;
     TRISCSET = 0x2000; //RD0, 8-11, and RC13 are inputs for pedals and (swell?)
     TRISDSET = 0x0f01; 
     
     
     // Matrix columns - turned off
-    //RF2,4,5,8,12 RD14,15, RB12-15 are columns for swell and great
+    //RF4,5,12-13 RD14,15, RB12-15, RA1 are columns for swell and great
     //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
+    TRISACLR = 0x0002;
+    LATACLR = 0x0002;
     TRISBCLR = 0xf000;
     LATBCLR = 0xf000;
     TRISCCLR = 0x4000;
     LATCCLR = 0x4000;
     TRISDCLR = 0xf0fe;
     LATDCLR = 0xf0fe;
-    TRISFCLR = 0x1137;
-    LATFCLR = 0x1137;
+    TRISFCLR = 0x3033;
+    LATFCLR = 0x3033;
     TRISGCLR = 0x0002;
     LATGCLR = 0x0002;
     
@@ -148,35 +146,6 @@ void initTranslateTable(void) {
             translateTable[i][j][7] = 0;
         }
     }
-#ifdef USE_8x4_PEDAL
-    // overwrite the first channel for an 8x4 pedal board by
-    //   ignoring rows 5 thru 8
-    for (i = 0; i < 8; i++) {   // for eight groups of four notes each
-        for (j = 0; j < 4; j++) {   // four notes
-            keyTableIndex = i * 8 + j;
-            noteNumber = i * 4 + j;
-            translateTable[0][keyTableIndex][0] = M_NOTE_ON;
-            translateTable[0][keyTableIndex][1] = M_KBD_FIRST_KEY + noteNumber;
-            translateTable[0][keyTableIndex][2] = M_VELOCITY_ON;
-            translateTable[0][keyTableIndex][3] = 0;
-            translateTable[0][keyTableIndex][4] = M_NOTE_OFF;
-            translateTable[0][keyTableIndex][5] = M_KBD_FIRST_KEY + noteNumber;
-            translateTable[0][keyTableIndex][6] = M_VELOCITY_OFF;
-            translateTable[0][keyTableIndex][7] = 0;
-        }
-        for (j = 4; j < 8; j++) {   // four empty locations
-            keyTableIndex = i * 8 + j;
-            translateTable[0][keyTableIndex][0] = 0;
-            translateTable[0][keyTableIndex][1] = 0;
-            translateTable[0][keyTableIndex][2] = 0;
-            translateTable[0][keyTableIndex][3] = 0;
-            translateTable[0][keyTableIndex][4] = 0;
-            translateTable[0][keyTableIndex][5] = 0;
-            translateTable[0][keyTableIndex][6] = 0;
-            translateTable[0][keyTableIndex][7] = 0;
-        }
-    }
-#endif
     // fix for transpose function
     translateTable[7][61][4] = 0x97;
     translateTable[7][61][5] = 0x61;

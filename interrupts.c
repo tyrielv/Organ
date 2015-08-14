@@ -84,35 +84,15 @@
 
 extern volatile bool keyScanTime;
 extern volatile uint8_t keyScanCount;
-extern volatile bool setSAMsTime;
-extern volatile bool SAMsPowerOn;
+
 
 void __ISR(_TIMER_2_VECTOR, ipl2) TMR2_InterruptHandler(void) {
     if (!keyScanTime) {
-        if (++keyScanCount > 31)
+        if (++keyScanCount > 15)
             keyScanCount = 0;        // reset samScanTime counter
         keyScanTime = true;
         
     }
     IFS0bits.T2IF = 0;  // Clear the interrupt flag
-}
-
-void __ISR(_TIMER_3_VECTOR, ipl1) TMR3_InterruptHandler(void) {
-    /* Timer 3 does not run unless started by parseMidiMsg()
-     * If Timer 4 has not run yet then try to setSAMsTime in
-     * another 50ms. */
-    if (!setSAMsTime) {
-        setSAMsTime = true; // must be SAMs that need set or cleared
-        T3CONbits.ON = 0;   // Turn Timer 3 off
-    }
-    IFS0bits.T3IF = 0;  // Clear the interrupt flag
-}
-
-void __ISR(_TIMER_4_VECTOR, ipl2) TMR4_InterruptHandler(void) {
-    /* Timer 4 does not run unless started by program */
-    LATFSET = 0x0134;   // 1's turns off SAMs power for RF2, RF4, RF5, RF8
-    SAMsPowerOn = false;
-    T4CONbits.ON = 0;   // Turn Timer 4 off
-    IFS0bits.T4IF = 0;  // Clear the interrupt flag
 }
 
