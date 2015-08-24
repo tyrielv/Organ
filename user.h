@@ -134,7 +134,7 @@ void eraseMidiTxMsg(void);
 void eraseMidiRxMsg(void);
 void putMidiMsg(void);
 void sendMidiMsg(void);
-void getPots(int numPots);
+void getPots();
 void BlinkUSBStatus(void);
 static void InitializeSystem(void);
 void ProcessIO(void);

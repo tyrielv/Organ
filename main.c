@@ -129,6 +129,7 @@ uint8_t chipAddress = CENT_CHIP_1;
 
 volatile uint32_t *adcBufferPtr[8] = { &ADC1BUF0, &ADC1BUF1, &ADC1BUF2,
                     &ADC1BUF3, &ADC1BUF4, &ADC1BUF5, &ADC1BUF6, &ADC1BUF7 };
+
 uint32_t stalePot[16] = { 0,0,0,0,
                         0,0,0,0,
                         0,0,0,0,
@@ -629,27 +630,28 @@ void sendMidiMsg(void) {
     }
 }
 
-void getPots(int numPots) {
-    /*TODO
-    int i;
+void getPots() {
+    
+    int i = 0;
     int pot = 0;
     uint32_t diff;
-    for (i = 0; i < numPots; i++) {
+    //for (i = 0; i < 1; i++) {
         freshPot[i] = *adcBufferPtr[i] >> 3;
         freshPot[i] = (freshPot[i] + stalePot[i]) >> 1; // average old and new
         diff = freshPot[i] - stalePot[i]; // find difference
         if (diff) {
-            if (i == 0) {
+            /*if (i == 0) {
                 pot = 7;
             }
-            else pot = i - 1;
+            else pot = i - 1;*/
+            pot = 0;
             midiTxMsg[0] = M_CTRL_CHANGE | pot;
             midiTxMsg[1] = M_CC_VOLUME;
                 midiTxMsg[2] = (uint8_t)freshPot[i];
             stalePot[i] = freshPot[i]; // save previous value
             sendMidiMsg();
         }
-    }*/
+    //}
 }
 
 /********************************************************************
@@ -820,14 +822,15 @@ void ProcessIO(void) {
                 updateKeyTable(4);
             }
             /* Every 32 scans read the potentiometers */
-            /* TODO
-            if (keyScanCount == 24) {
-                if (potScanTime = true) {
-                    getPots(8);             // read all 8 pots
-                    potScanTime = false;    // don't do this until 32 keyscans later
+            
+            if (keyScanCount == 8) {
+                if (IFS1bits.AD1IF) {
+                    //AD1CON1bits.ASAM = 0;
+                    getPots();             // read all 8 pots
+                    IFS1bits.AD1IF = 0;
                     AD1CON1bits.ASAM = 1;   // restart auto sampling
                 }
-            } */
+            } 
         }        
         keyScanTime = false; // don't re-enter while running!
     }

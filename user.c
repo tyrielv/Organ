@@ -73,7 +73,6 @@ void initPorts(void) {
     mLED_3_Off();
     mLED_4_Off();
     
-    AD1PCFG = 0x0000;   // No analogs currently enabled
     // Matrix rows - inputs default to low
     TRISASET = 0xc030; //RA4-5, 14-15, F2,F8 are inputs for transpose and (great?)
     TRISFSET = 0x0104;
@@ -84,18 +83,23 @@ void initPorts(void) {
     // Matrix columns - turned off
     //RF4,5,12-13 RD14,15, RB12-15, RA1 are columns for swell and great
     //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
-    TRISACLR = 0x0002;
+    //RG13,15, RC1 are always high, for pot power.
+    //A6-7, G0,12,14 are for preset LED control
+    TRISACLR = 0x00a2;
     LATACLR = 0x0002;
+    LATASET = 0x00a0;
     TRISBCLR = 0xf000;
     LATBCLR = 0xf000;
-    TRISCCLR = 0x4000;
+    TRISCCLR = 0x4002;
     LATCCLR = 0x4000;
+    LATCSET = 0x0002;
     TRISDCLR = 0xf0fe;
     LATDCLR = 0xf0fe;
     TRISFCLR = 0x3033;
     LATFCLR = 0x3033;
-    TRISGCLR = 0x0002;
-    LATGCLR = 0x0002;
+    TRISGCLR = 0xf003;
+    LATGCLR = 0x0003;
+    LATGSET = 0xf000;
     
     //Outputs (currently none - will have some for preset LED)
     
@@ -182,12 +186,49 @@ void eraseMidiTxMsg(void) {
 }
 
 void initADC(void) {
-    /*TODO
+    TRISBSET = 0x0008;
+    AD1PCFG = 0xfff7;   // B3 analog enabled
     AD1CON1 = 0x00f0;       // auto conversion after sampling, stop after 8 samples
+    AD1CON2 = 0x0400;       // use MUXA, AVss/AVdd as Vref
+    AD1CON3 = 0x1f3f;       // ??
+    AD1CHS = 0;             // ignored for scanning
+    AD1CSSL = 0x0008;       // scan 8 inputs, RB0 and RB8:14
+    IFS1bits.AD1IF = 0; // clear ADC interrupt flag
+    IEC1bits.AD1IE = 1; // enable ADC interrupt
+    AD1CON1bits.ADON = 1;   // turn on the ADC
+    AD1CON1bits.ASAM = 1;   // start auto sampling
+    
+    /*AD1CON1bits.SSRC = 0b111; //Convert automatically after sampling
+    //AD1CHS = 0x00030000; //Connects RB3 as CH0 input
+    //AD1CSSL = 0;
+    AD1CON2bits.CSCNA = 0b1; //Use MUX A to select which input to scan
+    AD1CSSL = 0x0008;       // scan RB3
+    AD1CHS = 0; //don't use channels
+    AD1CON3 = 0x1f3f; 
+    //AD1CON3 = 0x1f03; //Auto sample at 31 TAD
+    AD1CON2bits.VCFG     = 0b000; // set v+/- reference to Vdd/Vss
+    AD1CON2bits.SMPI = 0b0000; //Interrupt after every sample/convert
+    AD1CON1bits.CLRASAM = 0b1; //After sampling, clear the ASAM bit.
+    AD1CON1bits.ADON     = 0b1;  // turn on the ADC
+    IFS1bits.AD1IF = 0; // clear ADC interrupt flag
+    IEC1bits.AD1IE = 1; // enable ADC interrupt
+    AD1CON1bits.ASAM = 1; // auto start sampling */
+    /*AD1CON2bits.VCFG     = 0b000; // set v+/- reference to Vdd/Vss
+    AD1CON2bits.SMPI = 0b0000; //Interrupt after every sample/convert
+    AD1CON3bits.ADRC = 0b1; //Use internal clock for conversion ??
+    AD1CON3bits.SAMC     = 0b11111;// Time for auto sampling
+    AD1CON3bits.ADCS     = 0b101;// use Fosc/16 for clock source
+    AD1CON3bits.ADCS = 0x3f; //Used in clock conversion?
+    AD1CON2bits.CSCNA = 0b1; //Use MUX A to select which input to scan
+    AD1CON1bits.CLRASAM = 0b1; //After sampling, clear the ASAM bit.
+    AD1CSSL = 0x0008;       // scan RB3
+    AD1CON1bits.ADON     = 0b1;  // turn on the ADC
+    AD1CON1bits.ASAM = 1; //Start auto sampling
+    /*
     AD1CON2 = 0x041c;       // use MUXA, AVss/AVdd as Vref
     AD1CON3 = 0x1f3f;       // ??
     AD1CHS = 0;             // ignored for scanning
-    AD1CSSL = 0x7f01;       // scan 8 inputs, RB0 and RB8:14
+    
     AD1CON1bits.ADON = 1;   // turn on the ADC
     AD1CON1bits.ASAM = 1;   // start auto sampling */
 }
