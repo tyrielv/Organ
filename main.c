@@ -543,6 +543,10 @@ void updateKeyTable(int matrix) {
                 midiTxMsg[1] = key;
                 midiTxMsg[2] = M_VELOCITY_OFF;
                 putMidiMsg(); // send note off msg
+                if (matrix == 4 && key == 57) {
+                    //Clear stops button was pressed
+                    initBuffers();
+                }
             }
         }
         if (keyDown) prevData |= 0b10000000; // store the data

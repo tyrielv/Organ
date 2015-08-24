@@ -85,9 +85,9 @@ void initPorts(void) {
     //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
     //RG13,15, RC1 are always high, for pot power.
     //A6-7, G0,12,14 are for preset LED control
-    TRISACLR = 0x00a2;
+    TRISACLR = 0x00c2;
     LATACLR = 0x0002;
-    LATASET = 0x00a0;
+    LATASET = 0x00c0;
     TRISBCLR = 0xf000;
     LATBCLR = 0xf000;
     TRISCCLR = 0x4002;
