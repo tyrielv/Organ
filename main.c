@@ -558,63 +558,77 @@ void putMidiMsg() {
     uint8_t mType = midiTxMsg[0] & 0xf0;
     int8_t key = midiTxMsg[1];
     int8_t kybd = midiTxMsg[0] & 0x0f;
+    int16_t i;
     int index = (kybd * 64) + key;
     switch (mType) {
         case M_NOTE_ON:
-            if (kybd == 3) {                            // MIDI ch4
-                if (key == 0) {     // if a transpose encoder bit
-                    int8_t transposeTemp = 5;
-                    if (keyBit[index++]) transposeTemp -= 1;
-                    if (keyBit[index++]) transposeTemp -= 2;
-                    if (keyBit[index++]) transposeTemp -= 4;
-                    if (keyBit[index]) transposeTemp -= 8;
-                    transposeSW = transposeTemp;
+            if (kybd == 3) {                            // MIDI ch4 - transpose
+#ifdef USE_MIDI_TRANSPOSE
+                if (key == 8) {     // neutral
+                    transposeSW = 8;
+                    transposeHW = 8;
+                }
+                else {
+                    transposeSW = key;
+                    int direction;
                     if (transposeSW > transposeHW) {
-                        kybd = 7;
-                        key = 0x3d;                     // increment
-                    } else if (transposeHW > transposeSW) {
-                        kybd = 7;
-                        key = 0x3e;                     // decrement
-                    } else {
-                        mType = 0;                      // send nothing
+                        key = 7;                     // increment
+                        direction = 1;
+                    } else if (transposeHW > transposeSW) {                        
+                        key = 9;                     // decrement
+                        direction = -1;
+                    } 
+                    while (transposeHW != transposeSW)
+                    {
+                        sendMidiMsg();
+                        transposeHW += direction;
                     }
+                    mType = 0;
                 }
-                else if (key < 4) {
-                    mType = 0;                          // send nothing
-                }
+#else
+                transposeSW = key - 8; //Save the amount we want to shift keys
+                key = 0; //Send the same note for every transpose change, which
+                //will be used by hauptwerk to turn off all current keys
+                midiTxMsg[0] = translateTable[kybd][key][0];
+                midiTxMsg[1] = translateTable[kybd][key][1];
+                midiTxMsg[2] = translateTable[kybd][key][2];
+                sendMidiMsg();
+                midiTxMsg[0] = translateTable[kybd][key][4];
+                midiTxMsg[1] = translateTable[kybd][key][5];
+                midiTxMsg[2] = translateTable[kybd][key][6];
+                sendMidiMsg();
+                mType = 0;
+                //Turn off all keys locally (but no stops) so they will be sent
+                //again with transpose applied
+                for (i = 0; i < 192; i++) 
+                {
+                    keyTable[i] = 0;
+                    keyBit[i] = false;
+                }      
+#endif           
             }
+            
             midiTxMsg[0] = translateTable[kybd][key][0];
             midiTxMsg[1] = translateTable[kybd][key][1];
             midiTxMsg[2] = translateTable[kybd][key][2];
+#ifndef USE_MIDI_TRANSPOSE
+            if (kybd < 3)
+                midiTxMsg[1] += transposeSW;
+#endif
             if (mType)
             sendMidiMsg();
             break;
         case M_NOTE_OFF:
-            if (kybd == 3) {                            // MIDI ch4
-                if (key == 0) {     // if a transpose encoder bit
-                    int8_t transposeTemp = 5;
-                    if (keyBit[index++]) transposeTemp -= 1;
-                    if (keyBit[index++]) transposeTemp -= 2;
-                    if (keyBit[index++]) transposeTemp -= 4;
-                    if (keyBit[index]) transposeTemp -= 8;
-                    transposeSW = transposeTemp;
-                    if (transposeSW > transposeHW) {
-                        kybd = 7;
-                        key = 0x3d;                     // increment
-                    } else if (transposeHW > transposeSW) {
-                        kybd = 7;
-                        key = 0x3e;                     // decrement
-                    } else {
-                        mType = 0;                      // send nothing
-                    }
-                }
-                else if (key < 4) {
-                    mType = 0;                          // send nothing
-                }
+            if (kybd == 3) {                            // MIDI ch4 - transpose
+                mType = 0;
             }
             midiTxMsg[0] = translateTable[kybd][key][4];
             midiTxMsg[1] = translateTable[kybd][key][5];
             midiTxMsg[2] = translateTable[kybd][key][6];
+#ifndef USE_MIDI_TRANSPOSE
+            if (kybd < 3)
+                midiTxMsg[1] += transposeSW;
+#endif
             if (mType)
             sendMidiMsg();
             break;
@@ -639,7 +653,7 @@ void getPots() {
     int i = 0;
     int pot = 0;
     uint32_t diff;
-    //for (i = 0; i < 1; i++) {
+    for (i = 0; i < 2; i++) {
         freshPot[i] = *adcBufferPtr[i] >> 3;
         freshPot[i] = (freshPot[i] + stalePot[i]) >> 1; // average old and new
         diff = freshPot[i] - stalePot[i]; // find difference
@@ -648,14 +662,14 @@ void getPots() {
                 pot = 7;
             }
             else pot = i - 1;*/
-            pot = 0;
+            pot = i;
             midiTxMsg[0] = M_CTRL_CHANGE | pot;
             midiTxMsg[1] = M_CC_VOLUME;
                 midiTxMsg[2] = (uint8_t)freshPot[i];
             stalePot[i] = freshPot[i]; // save previous value
             sendMidiMsg();
         }
-    //}
+    }
 }
 
 /********************************************************************
@@ -798,7 +812,7 @@ void ProcessIO(void) {
             setMatrixColumn(i); // set one column at a time low
             getBits(i);
             clrMatrixColumn(i);
-            for (j = 0; j < 100; j++) {
+            for (j = 0; j < 10; j++) {
                 //Needed to allow pull-up resistors time to work?
             }
         }

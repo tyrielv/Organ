@@ -68,11 +68,11 @@
 #define GREAT_INPUT_6 PORTAbits.RA4 
 
 #define TRANSPOSE_INPUT_1 PORTFbits.RF2
-#define TRANSPOSE_INPUT_2 PORTFbits.RF8
-#define TRANSPOSE_INPUT_3 PORTAbits.RA4
+#define TRANSPOSE_INPUT_2 PORTAbits.RA4 
+#define TRANSPOSE_INPUT_3 PORTFbits.RF8
 #define TRANSPOSE_INPUT_4 PORTAbits.RA5
-#define TRANSPOSE_INPUT_5 PORTAbits.RA14
-#define TRANSPOSE_INPUT_6 PORTAbits.RA15
+#define TRANSPOSE_INPUT_5 PORTAbits.RA15 
+#define TRANSPOSE_INPUT_6 PORTAbits.RA14
 
 #define MANUAL_OUTPUT_1 LATFbits.LATF12
 #define MANUAL_OUTPUT_2 LATBbits.LATB12 
@@ -97,12 +97,17 @@
 
 #define TRANPOSE_OUTPUT_1 LATDbits.LATD7
 #define TRANPOSE_OUTPUT_2 LATGbits.LATG1
-#define TRANPOSE_OUTPUT_3 LATDbits.LATD5 
-#define TRANPOSE_OUTPUT_4 LATFbits.LATF0
-#define TRANPOSE_OUTPUT_5 LATFbits.LATF1
+#define TRANPOSE_OUTPUT_3 LATFbits.LATF0
+#define TRANPOSE_OUTPUT_4 LATFbits.LATF1
+#define TRANPOSE_OUTPUT_5 LATDbits.LATD5 
 #define TRANPOSE_OUTPUT_6 LATDbits.LATD6 
 
-
+#define TRANSPOSE_RESET 63
+#define TRANSPOSE_UP 61
+#define TRANSPOSE_DOWN 62
+/*Uncomment to send transpose neutral, up, and down
+instead of shifting sent keys */
+//#define USE_MIDI_TRANSPOSE 
 
 /******************************************************************************/
 /* User Function Prototypes                                                    /

@@ -83,7 +83,7 @@ void initPorts(void) {
     // Matrix columns - turned off
     //RF4,5,12-13 RD14,15, RB12-15, RA1 are columns for swell and great
     //RC14, RD1-7,12-13, RF0-1, RG1 are columns for pedals and transpose
-    //RG13,15, RC1 are always high, for pot power.
+    //RG13,15, RC1 are always high, for power.
     //A6-7, G0,12,14 are for preset LED control
     TRISACLR = 0x00c2;
     LATACLR = 0x0002;
@@ -151,14 +151,15 @@ void initTranslateTable(void) {
         }
     }
     // fix for transpose function
-    translateTable[7][61][4] = 0x97;
-    translateTable[7][61][5] = 0x61;
-    translateTable[7][61][6] = 0x60;
-    translateTable[7][61][7] = 0;
-    translateTable[7][62][4] = 0x97;
-    translateTable[7][62][5] = 0x62;
-    translateTable[7][62][6] = 0x60;
-    translateTable[7][62][7] = 0;
+    /*translateTable[7][TRANSPOSE_UP][4] = 0x97;
+    translateTable[7][TRANSPOSE_UP][5] = 0x61;
+    translateTable[7][TRANSPOSE_UP][6] = 0x60;
+    translateTable[7][TRANSPOSE_UP][7] = 0;
+    translateTable[7][TRANSPOSE_DOWN][4] = 0x97;
+    translateTable[7][TRANSPOSE_DOWN][5] = 0x62;
+    translateTable[7][TRANSPOSE_DOWN][6] = 0x60;
+    translateTable[7][TRANSPOSE_DOWN][7] = 0;
+    translateTable[7][]*/
 }
 
 void eraseRxBuffer(void) {
@@ -186,13 +187,14 @@ void eraseMidiTxMsg(void) {
 }
 
 void initADC(void) {
-    TRISBSET = 0x0008;
-    AD1PCFG = 0xfff7;   // B3 analog enabled
+    TRISBSET = 0x0018;   
+    AD1PCFG = 0xffe7;   // B3 and 4 analog enabled
     AD1CON1 = 0x00f0;       // auto conversion after sampling, stop after 8 samples
     AD1CON2 = 0x0400;       // use MUXA, AVss/AVdd as Vref
+    AD1CON2bits.SMPI = 0b0001; //Interrupt after 2 pins read
     AD1CON3 = 0x1f3f;       // ??
     AD1CHS = 0;             // ignored for scanning
-    AD1CSSL = 0x0008;       // scan 8 inputs, RB0 and RB8:14
+    AD1CSSL = 0x0018;       // scan 2 inputs, RB3 and 4
     IFS1bits.AD1IF = 0; // clear ADC interrupt flag
     IEC1bits.AD1IE = 1; // enable ADC interrupt
     AD1CON1bits.ADON = 1;   // turn on the ADC
